@@ -1,4 +1,3 @@
-
 from flask import Flask, request
 from twilio.twiml.messaging_response import MessagingResponse
 import os
@@ -19,11 +18,10 @@ def sms_reply():
     elif 'nhis' in msg:
         response.message("NHIS a AKTH yana bada sabis ga ma’aikata da iyalansu.")
     else:
-        response.message("Na fahimci tambayarka ba sosai ba. Zan turawa ma’aikaci.")
+        response.message("Na fahimci tambayarka ba sosai ba. Zan turawa da taimako.")
 
     return str(response)
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
-    app.run(debug=True, port=port, host="0.0.0.0")
-
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=False, host="0.0.0.0", port=port)
