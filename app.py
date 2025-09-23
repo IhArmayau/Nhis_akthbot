@@ -7,12 +7,16 @@ app = Flask(__name__)
 
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
+#Za mu adana lambobin da suka riga sun karɓi gaisuwa
+seen_users = set()
+
 @app.route("/")
 def home():
     return "AI WhatsApp bot yana aiki!"
 
 @app.route("/sms", methods=["POST"])
 def sms_reply():
+    from_number = request.form.get("From")
     msg = request.form.get("Body")
     response = MessagingResponse()
 
@@ -26,14 +30,20 @@ def sms_reply():
             )
         }
 
-        reply = openai.ChatCompletion.create(model="gpt-3.5-turbo",
-            messages=[system_prompt, {"role": "user", "content": msg}],
+        reply = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",messages=[system_prompt, {"role": "user", "content": msg}],
             max_tokens=300,
             temperature=0.7
         )
+        bot_message = reply.choices[0].message.content.strip()
 
-        bot_response = reply.choices[0].message.content.strip()
-        response.message(bot_response)
+        if from_number not in seen_users:
+            greeting = "Barka da zuwa sashin kula da lafiya na Asibitin Malam Aminu Kano (AKTH). Da me zan iya taimaka muku?\n\n"
+            seen_users.add(from_number)
+        else:
+            greeting = ""
+
+        response.message(greeting + bot_message)
 
     except Exception as e:
         print(f"Kuskure: {e}")
