@@ -5,7 +5,6 @@ import os
 
 app = Flask(__name__)
 
-#Karanta OpenAI API key daga environment variable
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 @app.route("/")
@@ -22,20 +21,22 @@ def sms_reply():
             "role": "system",
             "content": (
                 "Kai kwararren mataimaki ne na lafiya da ke amsawa da harshen Hausa. "
-"Ka taimaka da shawarwari game da lafiya, amma ka guji bada magani kai tsaye. "
+                "Ka taimaka da shawarwari game da lafiya, amma ka guji bada magani kai tsaye. "
                 "Idan tambaya ta fi karfinka, ka bada shawara a ga likita."
             )
         }
 
-        reply = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[system_prompt, {"role": "user", "content": msg}]
+        reply = openai.ChatCompletion.create(model="gpt-3.5-turbo",
+            messages=[system_prompt, {"role": "user", "content": msg}],
+            max_tokens=300,
+            temperature=0.7
         )
 
         bot_response = reply.choices[0].message.content.strip()
         response.message(bot_response)
 
-    except Exception:
+    except Exception as e:
+        print(f"Kuskure: {e}")
         response.message("An samu matsala wajen amsawa. Ka sake gwadawa daga baya.")
 
     return str(response)
